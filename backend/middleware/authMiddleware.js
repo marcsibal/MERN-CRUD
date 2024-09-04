@@ -1,3 +1,4 @@
+// src/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
 const authMiddleware = (req, res, next) => {
@@ -9,6 +10,7 @@ const authMiddleware = (req, res, next) => {
     req.user = decoded;
     next();
   });
+  // console.log('Authorization Header:', req.headers.authorization);
 };
 
 module.exports = authMiddleware;
