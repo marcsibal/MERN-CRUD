@@ -1,10 +1,27 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
+import User from '../models/user.js';
 
-exports.register = async (req, res) => {
+
+export const getProfile = async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const user = new User({ username, password });
+    const user = await User.findById(req.user.id);
+    if (!user) return res.sendStatus(404);
+    res.json({
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      contact: user.contact,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const register = async (req, res) => {
+  try {
+    const { username, password, firstName, lastName, email, contact } = req.body;
+    const user = new User({ username, password, firstName, lastName, email, contact });
     await user.save();
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
@@ -12,7 +29,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
@@ -23,3 +40,5 @@ exports.login = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+
+

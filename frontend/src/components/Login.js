@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { UserIcon, LockClosedIcon } from '@heroicons/react/24/solid';
 import bg from '../assets/bg.png';
+import { Snackbar, Alert } from '@mui/material'; 
 
 const validationSchema = yup.object({
     username: yup.string().required('Username is required'),
@@ -16,6 +17,11 @@ const validationSchema = yup.object({
 const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    
+    // Alert state
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const formik = useFormik({
         initialValues: { username: '', password: '' },
@@ -26,10 +32,17 @@ const Login = () => {
                 dispatch(setCredentials({ token: response.data.token }));
                 navigate('/tasks');
             } catch (error) {
-                console.error('Login failed', error);
+                setAlertSeverity('error');
+                setAlertMessage('Login failed Invalid Credentials ');
+                setAlertOpen(true);
+                console.log(error)
             }
         }
     });
+
+    const handleCloseAlert = () => {
+        setAlertOpen(false);
+    };
 
     return (
         <div
@@ -86,6 +99,16 @@ const Login = () => {
                     </form>
                 </div>
             </div>
+
+            <Snackbar
+                open={alertOpen}
+                autoHideDuration={2000}
+                onClose={handleCloseAlert}
+            >
+                <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </div>
     );
 };

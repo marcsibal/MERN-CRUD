@@ -10,7 +10,6 @@ const TaskItem = ({ task }) => {
   };
 
   const handleUpdate = () => {
-    // Implement task update logic here (e.g., show a form)
     dispatch(updateTask({ id: task._id, taskData: { ...task, status: 'completed' } }));
   };
 
